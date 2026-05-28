@@ -1,11 +1,11 @@
 # SFTP Import SQL
 
-Proyecto Python para consolidar archivos CSV `data_*.csv` ubicados bajo `AMERICAS/` en un servidor SFTP hacia SQL Server.
+Proyecto Python para consolidar archivos CSV ubicados bajo jerarquía de carpetas en un servidor SFTP hacia SQL Server.
 
 ## Flujo
 
 1. Conecta al SFTP.
-2. Recorre `AMERICAS/` recursivamente.
+2. Recorre jerarquía de carpetas recursivamente.
 3. Selecciona archivos cuyo nombre inicia con `data_`.
 4. Descarga un archivo a la vez a `temp/`.
 5. Valida que el header coincida con el schema configurado.
