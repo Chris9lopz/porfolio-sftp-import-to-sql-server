@@ -1,0 +1,33 @@
+sftp:
+  host: ""
+  port: 22
+  username: ""
+  password: ""
+  base_path: ""
+  file_prefix: ""
+
+sql_server:
+  driver: "ODBC Driver 17 for SQL Server"
+  server: ""
+  database: ""
+  trusted_connection: true
+  username: ""
+  password: ""
+  target_table: "dbo.sftp_data_consolidated"
+  audit_table: "dbo.sftp_import_audit"
+
+processing:
+  delimiter: ","
+  encoding: "utf-8"
+  chunksize: 50000
+  temp_dir: "temp"
+  log_dir: "logs"
+  truncate_target_on_start: true
+
+schema:
+  # Replace these columns with the real CSV schema before the first production run.
+  columns:
+    - name: "agent_id"
+      sql_type: "INT"
+      pandas_dtype: "int"
+      nullable: false
