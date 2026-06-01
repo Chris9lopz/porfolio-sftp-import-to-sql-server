@@ -1,55 +1,124 @@
-# SFTP Import SQL
+# SFTP to SQL Server ETL Pipeline
 
-Proyecto Python para consolidar archivos CSV ubicados bajo jerarquía de carpetas en un servidor SFTP hacia SQL Server.
+## Project Overview
 
-## Flujo
+This project demonstrates the development of an automated ETL (Extract, Transform, Load) pipeline using Python. The solution retrieves files from a secure SFTP server, processes and validates the data, and loads the results into Microsoft SQL Server for reporting and analytics purposes.
 
-1. Conecta al SFTP.
-2. Recorre jerarquía de carpetas recursivamente.
-3. Selecciona archivos cuyo nombre inicia con `data_`.
-4. Descarga un archivo a la vez a `temp/`.
-5. Valida que el header coincida con el schema configurado.
-6. Carga por chunks a SQL Server.
-7. Agrega metadata de archivo y corrida.
-8. Registra auditoria por archivo.
+The project simulates a common enterprise data engineering scenario where data is received from external providers through secure file transfers and must be integrated into a centralized database.
 
-Cada archivo se carga dentro de una transaccion. Si falla durante descarga,
-validacion o insercion, sus filas parciales se revierten, se marca como `FAILED`
-y el proceso continua con el siguiente archivo.
+## Business Problem
 
-## Preparacion local
+Organizations often receive data files from third-party vendors through SFTP servers. Manual downloads and database imports are time-consuming, error-prone, and difficult to scale.
 
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item config\config.example.yaml config\config.local.yaml
+This project automates the entire process by:
+
+1. Connecting securely to an SFTP server.
+2. Downloading incoming files.
+3. Validating and transforming the data.
+4. Loading the processed information into SQL Server.
+5. Logging execution details and handling failures.
+
+## Solution Architecture
+
+```text
++----------------+
+|  SFTP Server   |
++----------------+
+        |
+        v
++----------------+
+| File Download  |
++----------------+
+        |
+        v
++----------------------+
+| Data Validation &    |
+| Transformation       |
++----------------------+
+        |
+        v
++----------------+
+|  SQL Server    |
++----------------+
 ```
 
-Edita `config/config.local.yaml` con credenciales, servidor SQL y columnas reales del CSV.
+## Key Features
 
-## Crear tablas
+* Secure SFTP connectivity
+* Automated file ingestion
+* Data validation and cleansing
+* SQL Server integration
+* Error handling and logging
+* Configurable environment settings
+* Reusable ETL architecture
 
-Antes de ejecutar el proceso, ajusta `sql/001_create_tables.sql` con las columnas reales del CSV y ejecutalo en SQL Server.
+## Technologies Used
 
-Tambien ajusta la seccion `schema.columns` de `config/config.local.yaml` para que
-coincida exactamente con el header del CSV, en el mismo orden.
+| Technology          | Purpose                            |
+| ------------------- | ---------------------------------- |
+| Python              | ETL development                    |
+| Paramiko            | SFTP connection and file transfer  |
+| Pandas              | Data processing and transformation |
+| SQL Server          | Data storage                       |
+| SQLAlchemy / PyODBC | Database connectivity              |
+| Logging             | Monitoring and troubleshooting     |
 
-## Ejecutar
+## ETL Process
 
-```powershell
-python -m src.main --config config/config.local.yaml
-```
+### Extract
 
-## Validacion inicial recomendada
+* Establishes a secure connection to the SFTP server.
+* Downloads source files from a configured directory.
 
-1. Probar primero con 2 o 3 archivos en una carpeta SFTP controlada.
-2. Confirmar que el conteo de filas en SQL Server coincida con los CSV.
-3. Revisar `dbo.sftp_import_audit` para validar estados, filas y errores.
-4. Revisar el archivo generado en `logs/`.
+### Transform
 
-## Notas
+* Reads and validates incoming data.
+* Handles data quality checks.
+* Applies business transformations.
+* Prepares records for database insertion.
 
-- La tabla consolidada se trunca al inicio de cada corrida si `truncate_target_on_start` esta en `true`.
-- La tabla de auditoria conserva el historico.
-- Si un archivo falla, se registra como `FAILED` y el proceso continua con el siguiente archivo.
+### Load
+
+* Connects to SQL Server.
+* Inserts or updates records in target tables.
+* Generates execution logs for auditing purposes.
+
+## Engineering Considerations
+
+During development, special attention was given to:
+
+* Separation of concerns between extraction, transformation, and loading layers.
+* Error recovery and exception handling.
+* Configuration-driven design.
+* Maintainability and scalability.
+* Secure credential management practices.
+
+## Skills Demonstrated
+
+This project showcases practical experience in:
+
+* Data Engineering
+* ETL Pipeline Development
+* Python Programming
+* SQL Development
+* Database Integration
+* Data Validation
+* Automation
+* Enterprise Data Workflows
+
+## Future Improvements
+
+Potential enhancements include:
+
+* Incremental data loading.
+* Docker containerization.
+* Workflow orchestration with Apache Airflow.
+* Automated testing.
+* Cloud deployment.
+* Monitoring and alerting.
+
+## Author
+
+Christian López
+
+Data Engineer | Python Developer | Data Science Student
